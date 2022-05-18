@@ -1,4 +1,4 @@
-package com.utilities;
+package com.bookit.utilities;
 
 import org.junit.Assert;
 import org.openqa.selenium.*;
