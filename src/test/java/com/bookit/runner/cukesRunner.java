@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
         },
         features = "src/test/resources/features",
         glue = "com/bookit/stepDefs",
-        dryRun = true,
+        dryRun = false,
         tags = "@wip"
 
 )
