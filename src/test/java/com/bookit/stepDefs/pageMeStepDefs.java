@@ -11,6 +11,7 @@ import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.junit.Assert;
 
 import static io.restassured.RestAssured.baseURI;
 
@@ -23,7 +24,7 @@ public class pageMeStepDefs {
     String fullNameAPI;
     String roleAPI;
 
-    String apiToken;
+    protected static String apiToken;
     @Given("user logged in homepage with following credentials {string} and {string}")
     public void userLoggedInHomepageWithFollowingCredentialsAnd(String username, String password) {
         Driver.get().get(ConfigurationReader.get("url"));
@@ -64,7 +65,7 @@ public class pageMeStepDefs {
         System.out.println("response.statusCode() = " + response.statusCode());
         String firstName = (String)response.path("firstName");
         String lastName = (String)response.path("lastName");
-        fullNameAPI = firstName + lastName;
+        fullNameAPI = firstName +" "+ lastName;
         roleAPI = response.path("role");
         System.out.println("fullNameAPI = " + fullNameAPI);
         System.out.println("roleAPI = " + roleAPI);
@@ -72,13 +73,13 @@ public class pageMeStepDefs {
     }
     @When("user obtains fullname and roles from Database")
     public void user_obtains_fullname_and_roles_from_database() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+
+
     }
     @Then("UI information matches with API")
     public void ui_information_matches_with_api() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        Assert.assertEquals("'FullName' does NOT match",fullNameAPI,fullNameUI);
+        Assert.assertEquals("'Role' does NOT match",roleAPI,roleUI);
     }
     @Then("API information matches with Database")
     public void api_information_matches_with_database() {

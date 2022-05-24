@@ -8,7 +8,7 @@ Feature: Identification
     When user takes user's fullName and user's role
     And user gets fullName and role from API
     #And user obtains fullname and roles from Database
-    #Then UI information matches with API
+    Then UI information matches with API
     #And API information matches with Database
     #And UI information matches with Database
 

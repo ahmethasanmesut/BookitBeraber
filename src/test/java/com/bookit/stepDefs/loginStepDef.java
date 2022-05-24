@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class loginStepDef {
     WebDriverWait wait = new WebDriverWait(Driver.get(),10);
     LoginPage loginPage = new LoginPage();
+    String token2;
     @Given("user is on the login page")
     public void user_is_on_the_login_page() {
         Driver.get().get(ConfigurationReader.get("url"));
@@ -25,6 +26,7 @@ public class loginStepDef {
         loginPage.emailBox.sendKeys(username);
         loginPage.passwordBox.sendKeys(password);
         loginPage.signInBtn.click();
+        token2 = pageMeStepDefs.apiToken;
     }
     @Then("user is on the home page")
     public void user_is_on_the_home_page() {
