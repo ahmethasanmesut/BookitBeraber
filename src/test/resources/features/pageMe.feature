@@ -6,7 +6,7 @@ Feature: Identification
     And user clicks "my" button
     And user clicks "self" title
     When user takes user's fullName and user's role
-   # And user gets fullName and role from API
+    And user gets fullName and role from API
     #And user obtains fullname and roles from Database
     #Then UI information matches with API
     #And API information matches with Database

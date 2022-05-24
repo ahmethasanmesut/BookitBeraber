@@ -8,6 +8,11 @@ import com.bookit.utilities.Driver;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+
+import static io.restassured.RestAssured.baseURI;
 
 public class pageMeStepDefs {
     LoginPage loginPage = new LoginPage();
@@ -15,6 +20,10 @@ public class pageMeStepDefs {
     MePage mePage = new MePage();
     String fullNameUI;
     String roleUI;
+    String fullNameAPI;
+    String roleAPI;
+
+    String apiToken;
     @Given("user logged in homepage with following credentials {string} and {string}")
     public void userLoggedInHomepageWithFollowingCredentialsAnd(String username, String password) {
         Driver.get().get(ConfigurationReader.get("url"));
@@ -40,8 +49,26 @@ public class pageMeStepDefs {
     }
     @When("user gets fullName and role from API")
     public void user_gets_fullname_and_role_from_api() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        baseURI = ConfigurationReader.get("api_url");
+
+        Response response1 = RestAssured.given().accept(ContentType.JSON).queryParams("email", ConfigurationReader.get("studentEmail"),
+                        "password", ConfigurationReader.get("password"))
+                .when().get("/sign");
+        response1.prettyPrint();
+        String token = response1.path("accessToken");
+        apiToken = "Bearer "+ token;
+
+        Response response = RestAssured.given().accept(ContentType.JSON)
+                .header("Authorization",apiToken)
+                .when().get("/api/users/me");
+        System.out.println("response.statusCode() = " + response.statusCode());
+        String firstName = (String)response.path("firstName");
+        String lastName = (String)response.path("lastName");
+        fullNameAPI = firstName + lastName;
+        roleAPI = response.path("role");
+        System.out.println("fullNameAPI = " + fullNameAPI);
+        System.out.println("roleAPI = " + roleAPI);
+
     }
     @When("user obtains fullname and roles from Database")
     public void user_obtains_fullname_and_roles_from_database() {
