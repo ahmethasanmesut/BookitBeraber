@@ -4,7 +4,9 @@ import com.bookit.pages.DashboardPage;
 import com.bookit.pages.LoginPage;
 import com.bookit.pages.MePage;
 import com.bookit.utilities.ConfigurationReader;
+import com.bookit.utilities.DBUtils;
 import com.bookit.utilities.Driver;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -12,6 +14,8 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.Assert;
+
+import java.util.Map;
 
 import static io.restassured.RestAssured.baseURI;
 
@@ -23,6 +27,8 @@ public class pageMeStepDefs {
     String roleUI;
     String fullNameAPI;
     String roleAPI;
+    String fullNameDB;
+    String roleDB;
 
     protected static String apiToken;
     @Given("user logged in homepage with following credentials {string} and {string}")
@@ -48,12 +54,13 @@ public class pageMeStepDefs {
         System.out.println("fullNameUI = " + fullNameUI);
         System.out.println("roleUI = " + roleUI);
     }
-    @When("user gets fullName and role from API")
-    public void user_gets_fullname_and_role_from_api() {
+    @And("user gets fullName and role from API  {string} and {string}")
+    public void userGetsFullNameAndRoleFromAPIAnd(String username, String password) {
+
         baseURI = ConfigurationReader.get("api_url");
 
-        Response response1 = RestAssured.given().accept(ContentType.JSON).queryParams("email", ConfigurationReader.get("studentEmail"),
-                        "password", ConfigurationReader.get("password"))
+        Response response1 = RestAssured.given().accept(ContentType.JSON).queryParams("email",username,
+                "password",password)
                 .when().get("/sign");
         response1.prettyPrint();
         String token = response1.path("accessToken");
@@ -69,12 +76,18 @@ public class pageMeStepDefs {
         roleAPI = response.path("role");
         System.out.println("fullNameAPI = " + fullNameAPI);
         System.out.println("roleAPI = " + roleAPI);
-
     }
-    @When("user obtains fullname and roles from Database")
-    public void user_obtains_fullname_and_roles_from_database() {
+    @And("user obtains fullname and roles from Database  {string} and {string}")
+    public void userObtainsFullnameAndRolesFromDatabaseAnd(String username, String password) {
+        DBUtils.createConnection();
+        Map<String, Object> rowMap = DBUtils.getRowMap("select firstname ||' '|| lastname as \"fullname\", role\n" +
+                "from users\n" +
+                "where email = '"+username+"'");
 
-
+        fullNameDB = (String) rowMap.get("fullname");
+        System.out.println("fullNameDB = " + fullNameDB);
+        roleDB = (String) rowMap.get("role");
+        System.out.println("roleDB = " + roleDB);
     }
     @Then("UI information matches with API")
     public void ui_information_matches_with_api() {
@@ -83,13 +96,13 @@ public class pageMeStepDefs {
     }
     @Then("API information matches with Database")
     public void api_information_matches_with_database() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        Assert.assertEquals("Not Matching",fullNameDB,fullNameAPI);
+        Assert.assertEquals("Not Matching",roleDB,roleAPI);
     }
     @Then("UI information matches with Database")
     public void ui_information_matches_with_database() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        Assert.assertEquals("Not Matching",fullNameDB,fullNameUI);
+        Assert.assertEquals("Not Matching",roleDB,roleUI);
     }
 
 
