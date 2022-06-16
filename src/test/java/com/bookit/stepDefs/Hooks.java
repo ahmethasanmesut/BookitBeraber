@@ -1,6 +1,7 @@
 package com.bookit.stepDefs;
 
 
+import com.bookit.utilities.DBUtils;
 import com.bookit.utilities.Driver;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -11,6 +12,20 @@ import org.openqa.selenium.TakesScreenshot;
 import java.util.concurrent.TimeUnit;
 
 public class Hooks {
+
+    @Before("@db")
+    public void dbConnect(){
+        System.out.println("Connection of database");
+        DBUtils.createConnection();
+    }
+
+    @After("@db")
+    public void dbClosed(){
+        System.out.println("Database connection closed");
+        DBUtils.destroy();
+    }
+
+
     @Before
     public void setUp(){
         Driver.get().manage().window().maximize();
@@ -23,7 +38,6 @@ public class Hooks {
             scenario.attach(screenshot,"image/png","screenshot");
         }
         Driver.closeDriver();
-
-
     }
+
 }
